@@ -1,0 +1,231 @@
+<section class="content-header" style="padding: 0.5% !important;">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-md-6">
+                <ol class="breadcrumb float-sm-left">
+                    <li class="breadcrumb-item">
+                        <a><i class="fas fa-home"></i> &nbsp;Home</a>
+                    </li>
+                    <li class="breadcrumb-item active">Test</li>
+                </ol>
+            </div>
+            <div class="col-md-6">
+                <button class="btn btn-outline-success btn-sm" (click)="open(AddModal,'ls','Add','')" style="float: right;"><i
+                        class="fas fa-plus-circle"></i> Add new
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="content cus-body">
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="tab-content">
+                        <div class="active tab-pane">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    Show
+                                    <select [(value)]="pageSize" (change)="getData()">
+                                        <option *ngFor="let size of pageSizes" [ngValue]="size">
+                                            {{ size }}
+                                        </option>
+                                    </select>
+                                    results
+                                </div>
+                                <div class="col-md-6">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary"
+                                        ngbTooltip="Ẩn/hiện bộ lọc" placement="left"
+                                        style="float: right; margin: 0 0 5px 5px;" (click)="buttonFilter()">
+                                        <i class="fas fa-filter"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" placement="left"
+                                        ngbTooltip="Tải lại" style="float: right; margin-bottom: 5px;"
+                                        (click)="refesh()">
+                                        <i class="fas fa-redo-alt"></i>
+                                    </button>
+                                    <input class="__searchFast" type="text" placeholder="Search quickly..."
+                                    [(ngModel)]="searchString">
+                                </div>
+                            </div>
+                            <div class="table-responsive" style="max-height: 60vh; margin-bottom: 15px;">
+                                <table class="table table-bordered table-sm" id="tableData">
+                                    <thead>
+                                        <th class="_th_tbl">
+                                            <div class="_th_tbl">Num</div>
+                                        </th>
+                                        <th class="_th_tbl">
+                                            <div class="_th_tbl">Full Name</div>
+                                        </th>
+                                        <th class="_th_tbl">
+                                            <div class="_th_tbl">Age</div>
+                                        </th>
+                                        <th class="_th_tbl">
+                                            <div class="_th_tbl">Birth</div>
+                                        </th>
+                                        <th class="_th_tbl">
+                                            <div class="_th_tbl">Gender</div>
+                                        </th>
+                                        <th class="_th_tbl">
+                                            <div class="_th_tbl">Department</div>
+                                        </th>
+                                        <th class="_th_tbl">
+                                            <div class="_th_tbl">Action</div>
+                                        </th>
+                                    </thead>
+                                    <tbody>
+                                        <tr style="text-align: center;"
+                                            *ngFor="let p of dataTable |filter: searchString | paginate: { itemsPerPage: pageSize, currentPage: page,totalItems: totalItem }; let i=index; let odd = odd">
+                                            <td style="width: 8vw;text-align: center;">{{p.id}}</td>
+                                            <td>{{p.full_name}}</td>
+                                            <td>{{p.age}}</td>
+                                            <td>{{p.birth | date:'dd-MM-yyyy'}}</td>
+                                            <td *ngIf="p.gender == 1">Male</td>
+                                            <td *ngIf="p.gender == 0">Female</td>
+                                            <td *ngIf="p.department_id == 1">IT</td>
+                                            <td *ngIf="p.department_id == 2">Business</td>
+                                            <td *ngIf="p.department_id == 3">Director</td>
+                                            <td class="text-center" style="white-space: nowrap;width: 8vw;">
+                                                <button class="btn btn-sm btn-outline-warning" placement="left"
+                                                    (click)="open(AddModal,'ls','Update',p)"
+                                                    ngbTooltip="Edit "
+                                                    style="margin-right: 0.1rem;">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-danger" placement="left" ngbTooltip="Delete "       
+                                                (click)="open(DeleteModal, 'xs', 'Delete', p)"                                             
+                                                    style="margin-right: 0.1rem;">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                       
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p style="float: left; font-weight: bold;">
+                                        Total {{ totalItem|number}} result, filtered
+                                        {{ totalItemFilter|number }} result
+                                    </p>
+                                </div>
+                                <div class="col-md-6 ">
+                                    <pagination-controls class="float-right" (pageChange)="pageChange(page = $event)"
+                                        nextLabel="Next" previousLabel="Preview"></pagination-controls>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-----------------------------------------------ADD MODAL ------------------------------------------------->
+<ng-template #AddModal let-modal>
+    <div class="modal-header m-header text-center" style="padding-top: 0px; padding-bottom: 0px;">
+      <h4 class="modal-title h-title w-100"> {{titleModal}}</h4>
+      <span (click)="modal.dismiss('Cross click')" aria-hidden="true" style="font-size: 25px;">&times;</span>
+    </div>
+    <div class="modal-body">
+      <form class="form-horizontal" [formGroup]="AddForm">       
+        <div class="row">
+          <div class="col-md-12">
+            <label class="col-md-10 require">Full Name</label>
+              <input type="text" class="form-control" [ngClass]="{ 'is-invalid': submitted && checkvalue.full_name.errors }"
+              formControlName="full_name" placeholder="Input...">
+              <div *ngIf="submitted && checkvalue.full_name.errors" class="invalid-feedback">
+                <div *ngIf="checkvalue.full_name.errors.required">
+                  This field is not blank !
+                </div>
+              </div>
+          </div>
+          <div class="col-md-6">
+            <label class="col-md-10 require">Age</label>
+              <input type="number" class="form-control" [ngClass]="{ 'is-invalid': submitted && checkvalue.age.errors }"
+              formControlName="age" placeholder="Input...">
+              <div *ngIf="submitted && checkvalue.age.errors" class="invalid-feedback">
+                <div *ngIf="checkvalue.age.errors.required">
+                  This field is not blank !
+                </div>
+              </div>
+          </div>
+          <div class="col-md-6">
+            <label class="col-md-10 require">Birth</label>
+              <input type="date" class="form-control" [ngClass]="{ 'is-invalid': submitted && checkvalue.birth.errors }"
+              formControlName="birth" placeholder="Input...">
+              <div *ngIf="submitted && checkvalue.birth.errors" class="invalid-feedback">
+                <div *ngIf="checkvalue.birth.errors.required">
+                  This field is not blank !
+                </div>
+              </div>
+          </div>
+          <div class="col-md-6">
+            <label class="col-md-10 " style="margin-top: 10px;">Gender</label>
+            <ng-select formControlName="gender" notFoundText="Không có kết quả" [ngClass]="{ 'is-invalid': submitted && checkvalue.gender.errors }">
+                <ng-option value="">Select gender</ng-option>
+                <ng-option [value]="0">Female</ng-option>
+                <ng-option [value]="1">Male</ng-option>
+            </ng-select>
+            <div *ngIf="submitted && checkvalue.gender.errors" class="invalid-feedback">
+                <div *ngIf="checkvalue.gender.errors.required">
+                  This field is not blank !
+                </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <label class="col-md-10 " style="margin-top: 10px;">Department</label>
+            <ng-select formControlName="department_id" notFoundText="Không có kết quả" [ngClass]="{ 'is-invalid': submitted && checkvalue.department_id.errors }">
+                <ng-option value="">Select department</ng-option>
+                <ng-option [value]="1">IT</ng-option>
+                <ng-option [value]="2">Business</ng-option>
+                <ng-option [value]="3">Director</ng-option>
+            </ng-select>
+            <div *ngIf="submitted && checkvalue.department_id.errors" class="invalid-feedback">
+                <div *ngIf="checkvalue.department_id.errors.required">
+                  This field is not blank !
+                </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <div class="float-right">
+        <button type="button" class="btn btn-outline-success btn-sm" (click)="onSubmit()">
+          <i class="fas fa-save"></i> Save
+        </button>
+        <button type="button" class="btn btn-outline-danger btn-sm" (click)="modal.dismiss('Cross click')"
+          style="margin-left: 1em;">
+          <i class="far fa-times-circle"></i> Close
+        </button>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template #DeleteModal let-modal>
+    <div class="modal-content">
+        <div class="modal-body">
+            <div class="icon-box">
+                <i class="fas fa-trash-alt"
+                    style="color: #f15e5e;font-size: 46px;display: inline-block;margin-top: 13px;"></i>
+            </div>
+            <p
+                style="color: inherit; text-decoration: none;font-size: 20px; text-align: center; font-weight: 600; margin-top: 1em;">
+                Are you sure want to delete ??
+            </p>
+            <div class="text-center">
+                <button type="button" class="btn btn-md btn-outline-success" (click)="confirmDelete()" >
+                    Confirm
+                </button>
+                <button type="button" class="btn btn-md btn-outline-danger" (click)="modal.dismiss('Cross click')" style="margin-left: 1em;">
+                    Cancel
+                </button>
+               
+            </div>
+        </div>
+    </div>
+  </ng-template>

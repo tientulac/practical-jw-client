@@ -1,0 +1,5 @@
+{
+  "production": false,
+  "System_API": "http://localhost:8080/",
+  "QA_API": "http://localhost:8080/"
+}
